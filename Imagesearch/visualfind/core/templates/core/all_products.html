@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All Product Images</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .product-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: translateY(0);
+    }
+    
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .product-image {
+      transition: transform 0.3s ease;
+    }
+    
+    .product-card:hover .product-image {
+      transform: scale(1.05);
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .pagination-btn {
+      transition: all 0.2s ease;
+    }
+    
+    .pagination-btn:hover {
+      transform: translateY(-1px);
+    }
+    
+    .shimmer {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.6s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+  <div class="gradient-bg text-white py-16 mb-8">
+    <div class="max-w-7xl mx-auto px-6">
+      <h1 class="text-5xl font-bold text-center mb-4 fade-in">All Products</h1>
+      <p class="text-xl text-center opacity-90 fade-in">Discover our complete collection</p>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 pb-12">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+      {% for product in products %}
+        <div class="product-card bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:border-blue-200 fade-in">
+          <div class="relative overflow-hidden bg-gray-100 h-56">
+            <img 
+              src="{{ product.image }}" 
+              alt="Product Image" 
+              class="product-image w-full h-full object-cover"
+              loading="lazy"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+          <div class="p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-2 line-clamp-2 leading-tight">
+              {{ product.title|default:"No Title" }}
+            </h2>
+            
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <p class="text-sm text-gray-600 font-medium">
+                  {{ product.type|default:"Unknown" }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="mt-16 flex justify-center items-center space-x-4">
+      {% if page > 1 %}
+        <a href="{% url 'all_products' %}?page={{ page|add:-1 }}" 
+           class="pagination-btn flex items-center space-x-2 px-6 py-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-blue-300 text-gray-700 shadow-sm transition-all duration-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          <span class="font-medium">Previous</span>
+        </a>
+      {% endif %}
+      <div class="flex items-center space-x-3">
+        <div class="bg-white border border-gray-200 rounded-xl px-6 py-3 shadow-sm">
+          <span class="text-gray-600 font-medium">Page</span>
+          <span class="text-blue-600 font-bold mx-2 text-lg">{{ page }}</span>
+          <span class="text-gray-600 font-medium">of {{ total_pages }}</span>
+        </div>
+      </div>
+      {% if page < total_pages %}
+        <a href="{% url 'all_products' %}?page={{ page|add:1 }}" 
+           class="pagination-btn flex items-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-sm transition-all duration-200">
+          <span class="font-medium">Next</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="9 5l7 7-7 7"></path>
+          </svg>
+        </a>
+      {% endif %}
+    </div>
+    <div class="mt-12 text-center">
+      <div class="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full px-6 py-3 shadow-sm">
+        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        <span class="text-sm text-gray-600 font-medium">
+          Showing products from our collection
+        </span>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const images = document.querySelectorAll('img[loading="lazy"]');
+      images.forEach(img => {
+        if (!img.complete) {
+          img.style.opacity = '0';
+          img.onload = function() {
+            this.style.transition = 'opacity 0.3s ease';
+            this.style.opacity = '1';
+          };
+        }
+      });
+      const cards = document.querySelectorAll('.product-card');
+      cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+      });
+    });
+  </script>
+</body>
+</html>
